@@ -1,6 +1,5 @@
-from eli5 import sklearn
 import pandas as pd
-from pandas.core.frame import DataFrame
+from sklearn.model_selection import cross_val_score
 
 def unbalanced_features(table: pd.DataFrame) -> pd.DataFrame:
     """Takes in a table and returns another table with column names 
@@ -61,10 +60,10 @@ def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, model: object
 
     if final_score < baseline_score:
         delta_score = baseline_score - final_score
-        print("The score was improved by", round(delta_score, 3))
-        print("The best score:", round(final_score, 3))
+        print("The score was improved by", round(delta_score, 5))
+        print("The best score:", round(final_score, 5))
         return final_selected_features
     else:
         print("The score was not improved.")
-        print("The lowest achieved score:", round(min(avg_scores), 4))
+        print("The lowest achieved score:", round(min(avg_scores), 5))
         return final_selected_features 
