@@ -1,4 +1,6 @@
+from eli5 import sklearn
 import pandas as pd
+from pandas.core.frame import DataFrame
 
 def unbalanced_features(table: pd.DataFrame) -> pd.DataFrame:
     """Takes in a table and returns another table with column names 
@@ -15,7 +17,8 @@ def unbalanced_features(table: pd.DataFrame) -> pd.DataFrame:
     return most_freq_val_table
 
 
-def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, start=1, end=11, step=1, divider=10000):
+def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, model: object, train_evaluation_df: pd.DataFrame, 
+                     target: str, start=1, end=11, step=1, divider=10000) -> pd.DataFrame:
     """Takes in an eli5 dataframe with weight of features, iterates through various thresholds of weight, 
     finds the lowest score and returns dataframe with selected features.
     
@@ -45,10 +48,10 @@ def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, start=1, end=
         for row in range(rows):
             selected_features.append(selected_features_df["feature"][row])
             
-        X_eval_selected = train_evaluation_data[selected_features]
-        y_eval = train_evaluation_data[target]
+        X_eval_selected = train_evaluation_df[selected_features]
+        y_eval = train_evaluation_df[target]
             
-        scores = cross_val_score(linear_regression, X_eval_selected, y_eval, scoring="neg_root_mean_squared_error")
+        scores = cross_val_score(model, X_eval_selected, y_eval, scoring="neg_root_mean_squared_error")
         avg_score = abs(scores.mean())
         avg_scores.append(avg_score)
         
@@ -59,7 +62,9 @@ def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, start=1, end=
     if final_score < baseline_score:
         delta_score = baseline_score - final_score
         print("The score was improved by", round(delta_score, 3))
-        return final_selected_features, final_score
+        print("The best score:", round(final_score, 3))
+        return final_selected_features
     else:
-        print("The score was not improved")
-        return final_selected_features, round(min(avg_scores), 4)
+        print("The score was not improved.")
+        print("The lowest achieved score:", round(min(avg_scores), 4))
+        return final_selected_features 
