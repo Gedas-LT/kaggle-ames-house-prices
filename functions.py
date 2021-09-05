@@ -74,7 +74,7 @@ def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, model: object
         return final_selected_features
     
     
-def alpha_selector(model_name: str, X_eval: pd.DataFrame, y_eval: pd.Series) -> float:
+def alpha_selector(model_name: str, X_eval: pd.DataFrame, y_eval: pd.Series, normalize=False) -> float:
     """Takes in a sklearn model name and iterates through sequence from 0.1 to 10 with step 0.1,
     where each number each time is assigned to Alpha attribute.
     
@@ -82,6 +82,7 @@ def alpha_selector(model_name: str, X_eval: pd.DataFrame, y_eval: pd.Series) -> 
     model_name -- sklearn model name: Ridge or Lasso.
     X_eval -- variables as a dataframe which are used in cross-validation.
     y_eval -- target as a series which are used in cross-validation.
+    normalize -- parameter used in sklearn model (default False).
     """
      
     alpha_sequence = np.arange(0.1, 10.1, 0.1)
@@ -90,7 +91,7 @@ def alpha_selector(model_name: str, X_eval: pd.DataFrame, y_eval: pd.Series) -> 
 
     if model_name == "Ridge":
         for alpha in alpha_sequence:
-            regression = Ridge(alpha=alpha)
+            regression = Ridge(alpha=alpha, normalize=normalize)
             scores = cross_val_score(regression, X_eval, y_eval, scoring="neg_root_mean_squared_error")
             avg_score = round(abs(scores.mean()), 5)
             if avg_score < lowest_score:
@@ -101,7 +102,7 @@ def alpha_selector(model_name: str, X_eval: pd.DataFrame, y_eval: pd.Series) -> 
     
     elif model_name == "Lasso":
         for alpha in alpha_sequence:
-            regression = Lasso(alpha=alpha)
+            regression = Lasso(alpha=alpha, normalize=normalize)
             scores = cross_val_score(regression, X_eval, y_eval, scoring="neg_root_mean_squared_error")
             avg_score = round(abs(scores.mean()), 5)
             if avg_score < lowest_score:
