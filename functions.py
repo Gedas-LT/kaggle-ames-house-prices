@@ -19,9 +19,9 @@ def unbalanced_features(table: pd.DataFrame) -> pd.DataFrame:
 
 
 def feature_selector(eli5_df: pd.DataFrame, baseline_score: float, model: object, train_evaluation_df: pd.DataFrame, 
-                     target: str, start=1, end=11, step=1, divider=10000) -> pd.DataFrame:
+                     target: str, start=1, end=11, step=1, divider=10000) -> list:
     """Takes in an eli5 dataframe with weight of features, iterates through various thresholds of weight, 
-    finds the lowest score and returns dataframe with selected features.
+    finds the lowest score and returns list with selected features.
     
     Keyword arguments:
     eli5_df -- eli5 dataframe with weight of features.
